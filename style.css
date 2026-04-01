@@ -1,0 +1,152 @@
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Tokens ── */
+:root {
+  --bg: #0e0e0e;
+  --surface: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e8e8e8;
+  --muted: #666;
+  --accent: #e8e8e8;
+  --gap: 2rem;
+  --max-width: 1100px;
+}
+
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+a:hover {
+  border-color: var(--text);
+}
+
+/* ── Layout ── */
+section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 6rem 2rem;
+}
+
+h2 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3rem;
+}
+
+/* ── Hero ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 4rem;
+}
+
+#hero h1 {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+#hero .discipline {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+#hero .tagline {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* ── Projects ── */
+#projects {
+  border-top: 1px solid var(--border);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.project {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.img-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.project-title {
+  font-size: 0.875rem;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+/* ── About ── */
+#about {
+  border-top: 1px solid var(--border);
+}
+
+.about-text {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 300;
+  max-width: 600px;
+  color: var(--text);
+}
+
+/* ── Contact ── */
+#contact {
+  border-top: 1px solid var(--border);
+}
+
+#contact a {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
