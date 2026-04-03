@@ -138,6 +138,50 @@ h2 {
   color: var(--text);
 }
 
+/* ── About link ── */
+.about-link {
+  display: inline-block;
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.about-link:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+/* ── Page nav (about page) ── */
+.page-nav {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 2rem 0;
+}
+
+.page-nav a {
+  font-size: 0.875rem;
+  color: var(--muted);
+  border-bottom: none;
+}
+
+.page-nav a:hover {
+  color: var(--text);
+}
+
+/* ── Bio (about page) ── */
+#bio {
+  border-top: none;
+}
+
+.bio-text {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 300;
+  max-width: 600px;
+  color: var(--text);
+  min-height: 1.2em;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .grid {

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NameBot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sidebar-bg: #f0f4f8;
+      --sidebar-width: 280px;
+      --teal: #2ec4c4;
+      --teal-light: #e6f7f7;
+      --text-primary: #1a1f2e;
+      --text-muted: #8a93a8;
+      --active-bg: #e2edf7;
+      --active-color: #2563eb;
+      --badge-bg: #d1faf0;
+      --badge-color: #0a9e80;
+      --input-bg: rgba(255,255,255,0.85);
+      --shadow-soft: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #e8edf2;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      color: var(--text-primary);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      gap: 8px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px 16px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .logo-wordmark {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    /* Search */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 9px 16px 9px 36px;
+      border: none;
+      border-radius: 999px;
+      background: #e2e8f0;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input:focus {
+      background: #d6dde8;
+    }
+
+    /* Nav */
+    .nav-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 10px 8px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: #e4eaf2;
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--active-bg);
+      color: var(--active-color);
+    }
+
+    .nav-item svg {
+      flex-shrink: 0;
+      opacity: 0.75;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+    }
+
+    .badge {
+      margin-left: auto;
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--badge-bg);
+      color: var(--badge-color);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: rgba(240, 244, 248, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-logo {
+      width: 36px;
+      height: 36px;
+    }
+
+    .breadcrumb {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .breadcrumb span {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f9a8d4, #fb7185);
+      box-shadow: 0 2px 8px rgba(251,113,133,0.35);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Chat area */
+    .chat-area {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Holographic background */
+    .chat-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 20%, rgba(186,230,255,0.65) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 15%, rgba(216,180,254,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 55% at 70% 80%, rgba(251,207,232,0.6) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 45% at 30% 75%, rgba(167,243,208,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(224,242,254,0.5) 0%, transparent 70%),
+        linear-gradient(135deg, #dbeafe 0%, #ede9fe 35%, #fce7f3 65%, #ecfdf5 100%);
+      z-index: 0;
+    }
+
+    /* Bokeh orbs */
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(48px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .orb-1 {
+      width: 320px; height: 320px;
+      background: rgba(125,211,252,0.45);
+      top: -60px; left: -40px;
+    }
+
+    .orb-2 {
+      width: 280px; height: 280px;
+      background: rgba(192,132,252,0.4);
+      top: 40px; right: 60px;
+    }
+
+    .orb-3 {
+      width: 360px; height: 260px;
+      background: rgba(249,168,212,0.45);
+      bottom: 40px; right: -60px;
+    }
+
+    .orb-4 {
+      width: 260px; height: 260px;
+      background: rgba(110,231,183,0.35);
+      bottom: -40px; left: 80px;
+    }
+
+    .orb-5 {
+      width: 180px; height: 180px;
+      background: rgba(253,224,71,0.25);
+      top: 50%; left: 55%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Light leak streaks */
+    .streak {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .streak-1 {
+      width: 600px; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(186,230,255,0.7), rgba(216,180,254,0.5), transparent);
+      top: 28%; left: -50px;
+      transform: rotate(-8deg);
+      filter: blur(2px);
+    }
+
+    .streak-2 {
+      width: 500px; height: 1.5px;
+      background: linear-gradient(90deg, transparent, rgba(251,207,232,0.6), rgba(167,243,208,0.4), transparent);
+      bottom: 35%; right: -30px;
+      transform: rotate(6deg);
+      filter: blur(2px);
+    }
+
+    /* Center content */
+    .center-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+      padding-bottom: 80px;
+    }
+
+    .bot-avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 50%, #818cf8 100%);
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,0.6),
+        0 8px 40px rgba(56,189,248,0.4),
+        0 2px 16px rgba(129,140,248,0.3);
+      flex-shrink: 0;
+    }
+
+    .greeting {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: #1a1f2e;
+      letter-spacing: -0.02em;
+      text-shadow: 0 1px 8px rgba(255,255,255,0.8);
+    }
+
+    /* Bottom bar */
+    .bottom-bar {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: min(680px, calc(100% - 48px));
+    }
+
+    .chat-input-wrap {
+      position: relative;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 999px;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.1),
+        0 1px 4px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      padding: 4px 4px 4px 22px;
+    }
+
+    .chat-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      outline: none;
+      padding: 10px 0;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .clip-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .clip-btn:hover {
+      background: rgba(0,0,0,0.06);
+      color: var(--text-primary);
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: none;
+      background: var(--teal);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(46,196,196,0.4);
+      transition: background 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: #26aaaa;
+      box-shadow: 0 4px 14px rgba(46,196,196,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 28 L16 4 L28 28 Z" fill="#2ec4c4" opacity="0.9"/>
+        <path d="M10 28 L16 16 L22 28 Z" fill="#0d9488" opacity="0.7"/>
+      </svg>
+      <span class="logo-wordmark">NameBot</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M11 11L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input class="search-input" type="text" placeholder="Search in chats" />
+    </div>
+
+    <div class="nav-item active">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 5a1 1 0 011-1h3.586a1 1 0 01.707.293L8 1.586A1 1 0 018.707 1H13a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M2 6h12" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+      My bots
+    </div>
+
+    <div class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="11" cy="5" r="2" stroke="currentColor" stroke-width="1.25"/>
+        <path d="M1 13c0-2.21 2.239-4 5-4s5 1.79 5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M11 9c1.657 0 3 1.343 3 3" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+      </svg>
+      Public bots
+    </div>
+
+    <div class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="4" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="8" cy="9" r="1.5" stroke="currentColor" stroke-width="1.25"/>
+      </svg>
+      Integrations
+      <span class="badge">Beta</span>
+    </div>
+
+    <div class="nav-item">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H9l-3 3v-3H3a1 1 0 01-1-1V3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      Chat
+    </div>
+
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Header -->
+    <header class="header">
+      <svg class="header-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 32 L18 4 L32 32 Z" fill="#2ec4c4" opacity="0.9"/>
+        <path d="M11 32 L18 18 L25 32 Z" fill="#0d9488" opacity="0.7"/>
+      </svg>
+      <div class="breadcrumb">
+        <span>My bots</span> &nbsp;›&nbsp; NameBot
+      </div>
+      <div class="avatar"></div>
+    </header>
+
+    <!-- Chat area -->
+    <div class="chat-area">
+
+      <!-- Bokeh orbs -->
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="orb orb-4"></div>
+      <div class="orb orb-5"></div>
+
+      <!-- Light leak streaks -->
+      <div class="streak streak-1"></div>
+      <div class="streak streak-2"></div>
+
+      <!-- Center content -->
+      <div class="center-content">
+        <div class="bot-avatar"></div>
+        <p class="greeting">Hello, how can I help today?</p>
+      </div>
+
+      <!-- Chat input -->
+      <div class="bottom-bar">
+        <div class="chat-input-wrap">
+          <input class="chat-input" type="text" placeholder="New chat in NameBot" />
+          <button class="clip-btn" title="Attach file">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.5 7.5l-6 6a3.5 3.5 0 01-4.95-4.95l6.5-6.5a2 2 0 012.83 2.83L5.38 11.4a.5.5 0 01-.71-.71L10.5 4.88" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="send-btn" title="Send">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 13V3M8 3L4 7M8 3l4 4" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Sidebar nav active state toggle
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    // Send on Enter
+    document.querySelector('.chat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const val = e.target.value.trim();
+        if (val) {
+          e.target.value = '';
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
